@@ -2,7 +2,7 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: 'my_new_project'
+name: 'portfolio_tracking'
 version: '1.0.0'
 config-version: 2
 
@@ -35,8 +35,25 @@ clean-targets:         # directories to be removed by `dbt clean`
 # continue to be built as views. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 
+
+# we´ll create our three layers
+# Data storage layer - we´re gonna implement it with dbt snapshot and insert-only ingestion into history tables.
+# Refined layer - generated the refined model under the refined folder
+# data delivery layer - is implemented with one or more data marts. The model for each data mart are created in their own folder under the marts folder and each own schema
 models:
-  my_new_project:
-    # Applies to all files under models/example/
-    example:
+  portfolio_tracking:
+    +materialized: view
+    staging:    # data staging layer
+      +materialized: view
+      +schema: STAGING
+    refined:    # Refined data layer
       +materialized: table
+      +schema: REFINED
+    marts:       # Data delivery layer
+      portfolio:  # one specific data mart
+        +materialized: table
+        +schema: MART_PORTFOLIO
+snapshots:
+  portfolio_tracking:
+    +target_schema: SNAPSHOTS
+
